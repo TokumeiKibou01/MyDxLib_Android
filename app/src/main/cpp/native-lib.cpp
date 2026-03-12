@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <string>
 #include <DxLib.h>
+#include "Manager/ObjectManager.h"
+#include "Manager/SceneManager.h"
 
 int initApp();
 void exitApp();
@@ -13,7 +15,8 @@ int android_main() {
     while (true) {
         ClearDrawScreen();
 
-        DrawString(0, 0, "あああ", GetColor(255, 255, 255));
+        SceneManager::UpdateCurrentScene();
+        SceneManager::DrawCurrentScene();
 
         ScreenFlip();
         WaitTimer(16);
@@ -42,6 +45,10 @@ int initApp() {
     int width = 1280, height = 720;
     DxLib::GetAndroidDisplayResolution(&width, &height); //android用の解像度取得関数
     SetGraphMode(width, height, 32);
+
+    // MyDxlibの初期化
+    ObjectManager::InitManager();
+    SceneManager::InitManager();
 
     return 0;
 }

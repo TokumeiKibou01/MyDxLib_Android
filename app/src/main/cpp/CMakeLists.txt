@@ -38,7 +38,9 @@ add_library( # Sets the name of the library.
         native-lib.cpp
         Library/Location2D.cpp
         Library/Vector2D.cpp
-        Manager/ObjectManager.cpp)
+        Manager/ObjectManager.cpp
+        Manager/SceneManager.cpp
+        Scene/BootScene.cpp)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
