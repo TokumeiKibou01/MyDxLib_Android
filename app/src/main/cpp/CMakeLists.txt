@@ -40,7 +40,16 @@ add_library( # Sets the name of the library.
         Library/Vector2D.cpp
         Manager/ObjectManager.cpp
         Manager/SceneManager.cpp
-        Scene/BootScene.cpp)
+        Scene/BootScene.cpp
+        Debug/ImGUI/imgui.cpp
+        Debug/ImGUI/imgui_draw.cpp
+        Debug/ImGUI/imgui_demo.cpp
+        Debug/ImGUI/imgui_impl_android.cpp
+        Debug/ImGUI/imgui_tables.cpp
+        Debug/ImGUI/imgui_widgets.cpp
+        Debug/ImGUI/imgui_impl_opengl3.cpp)
+
+target_compile_definitions(native-lib PRIVATE IMGUI_IMPL_OPENGL_ES2)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this

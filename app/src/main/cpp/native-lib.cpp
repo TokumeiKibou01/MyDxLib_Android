@@ -1,11 +1,16 @@
 #include <jni.h>
 #include <string>
 #include <DxLib.h>
+#include <GLES3/gl3.h>
 #include "Manager/ObjectManager.h"
 #include "Manager/SceneManager.h"
+#include "Debug/ImGUI/imgui.h"
+#include "Debug/ImGUI/imgui_impl_android.h"
+#include "Debug/ImGUI/imgui_impl_opengl3.h"
 
 int initApp();
 void exitApp();
+int32_t AndroidInputCallback( AInputEvent *InputEvent, void *Data );
 
 int android_main() {
     if (initApp() == -1) {
@@ -15,8 +20,43 @@ int android_main() {
     while (true) {
         ClearDrawScreen();
 
+        ImGui_ImplAndroid_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
+        int touch = GetTouchInputNum();
+        auto& io = ImGui::GetIO();
+
         SceneManager::UpdateCurrentScene();
         SceneManager::DrawCurrentScene();
+
+        ImGui::Render();
+        ImDrawData* draw_data = ImGui::GetDrawData();
+
+        for (int n = 0; n < draw_data->CmdListsCount; n++) {
+            ImDrawList* cmd_list = draw_data->CmdLists[n];
+
+            for (int v = 0; v < cmd_list->VtxBuffer.Size; v++) {
+                cmd_list->VtxBuffer[v].pos.y =
+                        io.DisplaySize.y - cmd_list->VtxBuffer[v].pos.y;
+            }
+
+            for (int c = 0; c < cmd_list->CmdBuffer.Size; c++) {
+                ImDrawCmd& cmd = cmd_list->CmdBuffer[c];
+                float leftUpY = cmd.ClipRect.y; // 左上y座標
+                float rightDownY = cmd.ClipRect.w; // 右下y座標
+
+                cmd.ClipRect.y = io.DisplaySize.y - rightDownY; //例：1980（ディスプレイサイズ）- 1000(右下のy座標) = 左上のy座標
+                cmd.ClipRect.w = io.DisplaySize.y - leftUpY; //例：1980（ディスプレイサイズ）- 500(左上のy座標) = 右下のy座標
+            }
+        }
+
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
 
         ScreenFlip();
         WaitTimer(16);
@@ -50,10 +90,29 @@ int initApp() {
     ObjectManager::InitManager();
     SceneManager::InitManager();
 
+    //ImGUIを初期化
+    ImGui::CreateContext();
+    auto& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(3.0f);
+    io.FontGlobalScale = 3.0f;
+
+    ImGui::StyleColorsDark();
+    ImGui_ImplAndroid_Init(const_cast<ANativeWindow*>(GetNativeWindow()));
+    ImGui_ImplOpenGL3_Init();
+    SetAndroidInputEventFookFunction( AndroidInputCallback, NULL );
+
     return 0;
 }
 
 void exitApp() {
     DxLib_End();
     return;
+}
+
+int32_t AndroidInputCallback( AInputEvent *InputEvent, void *Data ) {
+    return ImGui_ImplAndroid_HandleInputEvent( InputEvent );
 }
