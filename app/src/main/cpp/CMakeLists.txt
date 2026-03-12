@@ -36,7 +36,8 @@ add_library( # Sets the name of the library.
 
         # Provides a relative path to your source file(s).
         native-lib.cpp
-        Library/Location2D.cpp)
+        Library/Location2D.cpp
+        Library/Vector2D.cpp)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
