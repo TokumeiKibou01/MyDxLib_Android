@@ -51,6 +51,10 @@ add_library( # Sets the name of the library.
 
 target_compile_definitions(native-lib PRIVATE IMGUI_IMPL_OPENGL_ES2)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG_MODE)
+endif()
+
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
