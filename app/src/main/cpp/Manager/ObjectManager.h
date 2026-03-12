@@ -10,12 +10,12 @@
 
 namespace ObjectManager {
 
-    static void InitManager();
-    static void AddObject(BaseObject* object);
-    static void RemoveObject(BaseObject* object);
-    static std::vector<BaseObject*>& GetAllObjects();
+    void InitManager();
+    void AddObject(BaseObject* object);
+    void RemoveObject(BaseObject* object);
+    std::vector<BaseObject*>& GetAllObjects();
 
-    template<class C> static C* GetDrawObject() {
+    template<class C> C* GetDrawObject() {
         for (BaseObject* obj : GetAllObjects()) {
             if (obj == nullptr) continue;
             C* instance = dynamic_cast<C*>(obj);
