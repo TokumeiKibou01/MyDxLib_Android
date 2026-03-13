@@ -2,11 +2,19 @@
 #include <string>
 #include <DxLib.h>
 #include <GLES3/gl3.h>
+#include "MyDxlib.h"
 #include "Manager/ObjectManager.h"
 #include "Manager/SceneManager.h"
 #include "Debug/ImGUI/imgui.h"
 #include "Debug/ImGUI/imgui_impl_android.h"
 #include "Debug/ImGUI/imgui_impl_opengl3.h"
+
+float DELTA_TIME = 0.0f;
+
+namespace {
+    float beforeTime = 0.0f;
+    float afterTime = 0.0f;
+}
 
 int initApp();
 void exitApp();
@@ -17,8 +25,15 @@ int android_main() {
         exitApp();
     }
 
+    beforeTime = GetNowCount();
+    afterTime = GetNowCount();
+
     while (true) {
         ClearDrawScreen();
+
+        afterTime = GetNowCount();
+        DELTA_TIME = (afterTime - beforeTime) / 1000.0f;
+        beforeTime = afterTime;
 
         ImGui_ImplAndroid_NewFrame();
         ImGui_ImplOpenGL3_NewFrame();
@@ -71,7 +86,7 @@ int android_main() {
 int initApp() {
     // ＤＸライブラリ初期化処理
     SetGraphMode(1280, 720, 32); //仮の解像度
-    SetBackgroundColor(0, 0, 0);
+    SetBackgroundColor(DxLibParams::BACKGROUND_COLOR[0], DxLibParams::BACKGROUND_COLOR[1], DxLibParams::BACKGROUND_COLOR[2]);
 
     if (DxLib_Init() == -1) {
         DxLib_End();
@@ -85,6 +100,7 @@ int initApp() {
     int width = 1280, height = 720;
     DxLib::GetAndroidDisplayResolution(&width, &height); //android用の解像度取得関数
     SetGraphMode(width, height, 32);
+    DxLibParams::ChangeFontSize(3.0);
 
     // MyDxlibの初期化
     ObjectManager::InitManager();

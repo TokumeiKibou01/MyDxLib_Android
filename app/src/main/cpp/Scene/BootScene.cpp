@@ -5,6 +5,7 @@
 #include <DxLib.h>
 #include "BootScene.h"
 #include "../Debug/ImGUI/imgui.h"
+#include "../MyDxlib.h"
 
 void BootScene::Update() {
     sceneCounter_++;
@@ -17,8 +18,16 @@ void BootScene::Draw() {
 #ifdef DEBUG_MODE
     ImGui::Begin("Debug");
     ImGui::Text("Counter: %d", sceneCounter_);
+    ImGui::Text("DeltaTime: %f", DELTA_TIME);
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     ImGui::Text("Mouse Position: %f, %f", ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+    if (ImGui::Button("Save Screenshot")) {
+        saveScreenShot(nullptr);
+    }
+    ImGui::Text("System Fonts:");
+    for (const auto& font : GetSystemFonts()) {
+        ImGui::Text("%s", font.c_str());
+    }
     ImGui::End();
 #endif
 }
